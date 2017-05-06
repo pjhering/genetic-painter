@@ -1,19 +1,20 @@
 package geneticpainter;
 
 import java.awt.Color;
-import java.awt.Shape;
+import java.awt.Polygon;
 import static java.util.Objects.requireNonNull;
 
 public class Solution implements Comparable<Solution>
 {
-    public final Shape[] SHAPES;
-    public final Color[] CLOLORS;
+    public final Polygon[] SHAPES;
+    public final Color[] COLORS;
     private long fitness;
+    private boolean hasBeenEvaluated;
     
-    public Solution(Shape[] shapes, Color[] colors)
+    public Solution(Polygon[] shapes, Color[] colors)
     {
         this.SHAPES = requireNonNull(shapes);
-        this.CLOLORS = requireNonNull(colors);
+        this.COLORS = requireNonNull(colors);
     }
 
     public long getFitness()
@@ -24,6 +25,7 @@ public class Solution implements Comparable<Solution>
     public void setFitness(long fitness)
     {
         this.fitness = fitness;
+        hasBeenEvaluated = true;
     }
 
     @Override
@@ -40,5 +42,10 @@ public class Solution implements Comparable<Solution>
         }
         
         return 0;
+    }
+
+    boolean hasBeenEvaluated()
+    {
+        return hasBeenEvaluated;
     }
 }
