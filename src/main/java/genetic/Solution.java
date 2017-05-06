@@ -1,17 +1,17 @@
-package geneticpainter;
+package genetic;
 
 import java.awt.Color;
-import java.awt.Polygon;
+import java.awt.Shape;
 import static java.util.Objects.requireNonNull;
 
 public class Solution implements Comparable<Solution>
 {
-    public final Polygon[] SHAPES;
+    public final Shape[] SHAPES;
     public final Color[] COLORS;
     private long fitness;
     private boolean hasBeenEvaluated;
     
-    public Solution(Polygon[] shapes, Color[] colors)
+    public Solution(Shape[] shapes, Color[] colors)
     {
         this.SHAPES = requireNonNull(shapes);
         this.COLORS = requireNonNull(colors);

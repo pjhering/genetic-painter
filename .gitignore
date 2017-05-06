@@ -1,0 +1,5 @@
+/target/
+/genetic-painter/
+/**/*.jpg
+/**/*.jpeg
+/**/*.png

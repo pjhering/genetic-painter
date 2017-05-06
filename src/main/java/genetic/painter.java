@@ -1,10 +1,10 @@
-package geneticpainter;
+package genetic;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import static java.awt.geom.PathIterator.SEG_CLOSE;
 import static java.awt.geom.PathIterator.SEG_LINETO;
@@ -12,27 +12,27 @@ import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import java.io.File;
 import java.io.IOException;
-import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 import static java.lang.System.arraycopy;
+import static java.lang.System.out;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 import javax.imageio.ImageIO;
 
-public class run
+public class painter
 {
 
     private static final File SAVE = new File("genetic-painter");
     private static final Random R = new Random();
     private static final int POP_SIZE = 50;
-    private static final int SHAPE_COUNT = 50;
+    private static final int SHAPE_COUNT = 150;
     private static final int VERTEX_COUNT = 3;
-    private static final int GENERATIONS = 10;
+    private static final int GENERATIONS = 100000;
     private static final double MUTATION_RATE = 0.05;
 
     public static void main(String[] args)
@@ -55,7 +55,8 @@ public class run
 
     private static void process(String arg) throws IOException
     {
-        BufferedImage img = typeIntArgb(arg);
+        BufferedImage img = typeIntArgb("/" + arg);
+        
         int w = img.getWidth();
         int h = img.getHeight();
         int minX = 0 - (w / 2);
@@ -69,7 +70,10 @@ public class run
         while (count < GENERATIONS)
         {
             evaluateFitness(img, pop);
-            save(count, arg, pop[0], w, h);
+            if(count % 1000 == 0)
+            {
+                save(count, arg, pop[0], w, h);
+            }
             recombine(pop, minX, minY, maxX, maxY);
             count += 1;
         }
@@ -77,7 +81,7 @@ public class run
 
     private static BufferedImage typeIntArgb(String arg) throws IOException
     {
-        URL url = run.class.getResource(arg);
+        URL url = painter.class.getResource(arg);
         BufferedImage img = ImageIO.read(url);
 
         if (img.getType() != TYPE_INT_ARGB)
@@ -118,7 +122,7 @@ public class run
 
     private static Solution randomSolution(int minX, int minY, int maxX, int maxY)
     {
-        Polygon[] shapes = new Polygon[SHAPE_COUNT];
+        Shape[] shapes = new Shape[SHAPE_COUNT];
         Color[] colors = new Color[SHAPE_COUNT];
 
         for (int i = 0; i < SHAPE_COUNT; i++)
@@ -130,7 +134,7 @@ public class run
         return new Solution(shapes, colors);
     }
 
-    private static Polygon randomShape(int minX, int minY, int maxX, int maxY)
+    private static Shape randomShape(int minX, int minY, int maxX, int maxY)
     {
         int w = maxX - minX;
         int h = maxY - minY;
@@ -151,9 +155,10 @@ public class run
         int r = R.nextInt(256);
         int g = R.nextInt(256);
         int b = R.nextInt(256);
-        int a = R.nextInt(256);
+//        int a = R.nextInt(256);
 
-        return new Color(r, g, b, a);
+//        return new Color(r, g, b, a);
+        return new Color(r, g, b, 128);
     }
 
     private static void evaluateFitness(BufferedImage img, Solution[] pop)
@@ -226,9 +231,10 @@ public class run
 
     private static void save(int generation, String arg, Solution solution, int width, int height) throws IOException
     {
-        String name = format("%d08-%s.png", generation, arg);
+        String name = format("%08d-%s.png", generation, arg);
         File file = new File(SAVE, name);
-        ImageIO.write(express(solution, width, height), name, file);
+        out.println(file.getAbsolutePath());
+        ImageIO.write(express(solution, width, height), "png", file);
     }
 
     private static void recombine(Solution[] pop, int x1, int y1, int x2, int y2)
@@ -257,14 +263,14 @@ public class run
     {
         int length = min(a.SHAPES.length, b.SHAPES.length);
         int c = R.nextInt(length);
-        Polygon[] shapes = new Polygon[length];
+        Shape[] shapes = new Shape[length];
         Color[] colors = new Color[length];
         
         arraycopy(a.SHAPES, 0, shapes, 0, c);
-        arraycopy(b.SHAPES, c, shapes, c, shapes.length);
+        arraycopy(b.SHAPES, c, shapes, c, shapes.length - c);
         
         arraycopy(a.COLORS, 0, colors, 0, c);
-        arraycopy(b.COLORS, c, colors, c, colors.length);
+        arraycopy(b.COLORS, c, colors, c, colors.length - c);
         
         if(R.nextDouble() < MUTATION_RATE)
         {
@@ -274,10 +280,10 @@ public class run
         return new Solution(shapes, colors);
     }
 
-    private static void mutate(Polygon[] shapes, Color[] colors, int x1, int y1, int x2, int y2)
+    private static void mutate(Shape[] shapes, Color[] colors, int x1, int y1, int x2, int y2)
     {
         int i = R.nextInt(shapes.length);
-        shapes[i] = mutate(shapes[i]);
+        shapes[i] = mutate(shapes[i], x1, y1, x2, y2);
         
         int j = R.nextInt(colors.length);
         colors[j] = mutate(colors[j]);
@@ -288,33 +294,31 @@ public class run
         int r = min(255, max(0, (color.getRed() + R.nextInt(64) - 32)));
         int g = min(255, max(0, (color.getGreen() + R.nextInt(64) - 32)));
         int b = min(255, max(0, (color.getBlue() + R.nextInt(64) - 32)));
-        int a = min(255, max(0, (color.getAlpha() + R.nextInt(64) - 32)));
+//        int a = min(255, max(0, (color.getAlpha() + R.nextInt(64) - 32)));
         
-        return new Color(r, g, b, a);
+//        return new Color(r, g, b, a);
+        return new Color(r, g, b, 128);
     }
 
-    private static Polygon mutate(Polygon shape, int x1, int y1, int x2, int y2)
+    private static Shape mutate(Shape shape, int x1, int y1, int x2, int y2)
     {
-        double theta = R.nextDouble() * PI / 2;
-        double cx = (x2 - x1) / 2.0;
-        double cy = (y2 - y1) / 2.0;
-        AffineTransform at = AffineTransform.getRotateInstance(theta, cx, cy);
-        PathIterator pi = shape.getPathIterator(at);
-        
-        float[] pts = new float[6];
+        PathIterator path = shape.getPathIterator(null);
+        float[] p = new float[6];
+        int t = 0;
+        int i = 0;
         int[] xs = new int[VERTEX_COUNT];
         int[] ys = new int[VERTEX_COUNT];
-        int type = 0;
-        int i = 0;
         
-        while((type = pi.currentSegment(pts)) != SEG_CLOSE)
+        while((t = path.currentSegment(p)) != SEG_CLOSE)
         {
-            if(type == SEG_LINETO)
+            if(t == SEG_LINETO)
             {
-                xs[i] = round(pts[0]);
-                ys[i] = round(pts[1]);
+                xs[i] = round(p[0]) + (R.nextInt(21) - 10);
+                ys[i] = round(p[1]) + (R.nextInt(21) - 10);
                 i += 1;
             }
+            
+            path.next();
         }
         
         return new Polygon(xs, ys, VERTEX_COUNT);
