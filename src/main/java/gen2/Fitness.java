@@ -13,14 +13,14 @@ public class Fitness
     private final int HEIGHT;
     private final BufferedImage TARGET;
     private final int[][][] ARGB;
-    private final Expresser EXPRESSER;
+    private final Expressor EXPRESSER;
 
     public Fitness(BufferedImage target)
     {
         this.TARGET = requireNonNull(target);
         this.WIDTH = TARGET.getWidth();
         this.HEIGHT = TARGET.getHeight();
-        this.EXPRESSER = new Expresser(new BufferedImage(WIDTH, HEIGHT, TYPE_INT_ARGB));
+        this.EXPRESSER = new Expressor(new BufferedImage(WIDTH, HEIGHT, TYPE_INT_ARGB));
         this.ARGB = new int[WIDTH][HEIGHT][];
 
         for (int x = 0; x < WIDTH; x++)

@@ -4,13 +4,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import static java.util.Objects.requireNonNull;
 
-public class Expresser
+public class Expressor
 {
     
     private final BufferedImage CANVAS;
     private final int WIDTH, HEIGHT;
     
-    public Expresser (BufferedImage canvas)
+    public Expressor (BufferedImage canvas)
     {
         this.CANVAS = requireNonNull(canvas);
         this.WIDTH = CANVAS.getWidth();
