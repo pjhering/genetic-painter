@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Shape;
 import static java.util.Objects.requireNonNull;
 
-public class Solution implements Comparable<Solution>
+public class Solution
 {
     public final Shape[] SHAPES;
     public final Color[] COLORS;
@@ -26,22 +26,6 @@ public class Solution implements Comparable<Solution>
     {
         this.fitness = fitness;
         hasBeenEvaluated = true;
-    }
-
-    @Override
-    public int compareTo(Solution o)
-    {
-        if(fitness < o.fitness)
-        {
-            return 1;
-        }
-        
-        if(fitness > o.fitness)
-        {
-            return -1;
-        }
-        
-        return 0;
     }
 
     boolean hasBeenEvaluated()

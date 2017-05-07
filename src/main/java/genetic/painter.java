@@ -32,11 +32,17 @@ public class painter
     private static final int POP_SIZE = 50;
     private static final int SHAPE_COUNT = 150;
     private static final int VERTEX_COUNT = 3;
-    private static final int GENERATIONS = 100000;
+    private static final int GENERATIONS = 100_000;
+    private static final int ELITE_COUNT = 2;
     private static final double MUTATION_RATE = 0.05;
+    private static final Sorter SORTER = new Sorter();
+    private static int[][][] test;
+    private static long bestFitness, worstFitness;
 
     public static void main(String[] args)
     {
+//        log("main");
+        
         if (SAVE.exists() || SAVE.mkdir())
         {
             for (String arg : args)
@@ -55,7 +61,13 @@ public class painter
 
     private static void process(String arg) throws IOException
     {
+        log("process");
+        
+        bestFitness = Long.MAX_VALUE;
+        worstFitness = Long.MIN_VALUE;
+        
         BufferedImage img = typeIntArgb("/" + arg);
+        test = argbArray(img);
         
         int w = img.getWidth();
         int h = img.getHeight();
@@ -69,18 +81,42 @@ public class painter
 
         while (count < GENERATIONS)
         {
-            evaluateFitness(img, pop);
-            if(count % 1000 == 0)
+            log(count);
+            
+            evaluateFitness(pop);
+            log(bestFitness + " - " + worstFitness);
+            
+            if(count % 50 == 0)
             {
                 save(count, arg, pop[0], w, h);
             }
+            
             recombine(pop, minX, minY, maxX, maxY);
             count += 1;
         }
     }
+    
+    private static int[][][] argbArray(BufferedImage i)
+    {
+        int w = i.getWidth();
+        int h = i.getHeight();
+        int[][][] array = new int[w][h][];
+        
+        for(int x = 0; x < w; x++)
+        {
+            for(int y = 0; y < h; y++)
+            {
+                array[x][y] = argb(i.getRGB(x, y));
+            }
+        }
+        
+        return array;
+    }
 
     private static BufferedImage typeIntArgb(String arg) throws IOException
     {
+//        log("typeIntArgb");
+        
         URL url = painter.class.getResource(arg);
         BufferedImage img = ImageIO.read(url);
 
@@ -94,6 +130,8 @@ public class painter
 
     private static BufferedImage typeIntArgb(BufferedImage in)
     {
+//        log("typeIntArgb");
+        
         BufferedImage out = new BufferedImage(in.getWidth(), in.getHeight(), TYPE_INT_ARGB);
         Graphics g = out.getGraphics();
         g.drawImage(in, 0, 0, null);
@@ -103,6 +141,8 @@ public class painter
 
     private static Solution[] initialPopulation(BufferedImage img)
     {
+        log("initialPopulation");
+        
         int w = img.getWidth();
         int h = img.getHeight();
         int minX = 0 - (w / 2);
@@ -122,6 +162,8 @@ public class painter
 
     private static Solution randomSolution(int minX, int minY, int maxX, int maxY)
     {
+//        log("randomSolution");
+        
         Shape[] shapes = new Shape[SHAPE_COUNT];
         Color[] colors = new Color[SHAPE_COUNT];
 
@@ -136,6 +178,8 @@ public class painter
 
     private static Shape randomShape(int minX, int minY, int maxX, int maxY)
     {
+//        log("randomShape");
+        
         int w = maxX - minX;
         int h = maxY - minY;
         int[] xs = new int[VERTEX_COUNT];
@@ -152,59 +196,82 @@ public class painter
 
     private static Color randomColor()
     {
+//        log("randomColor");
+        
         int r = R.nextInt(256);
         int g = R.nextInt(256);
         int b = R.nextInt(256);
-//        int a = R.nextInt(256);
 
-//        return new Color(r, g, b, a);
         return new Color(r, g, b, 128);
     }
 
-    private static void evaluateFitness(BufferedImage img, Solution[] pop)
+    private static void evaluateFitness(Solution[] pop)
     {
+        log("evaluateFitness");
+        
+        Arrays.sort(pop, SORTER);
+        
         for (Solution s : pop)
         {
             if(!s.hasBeenEvaluated())
             {
-                evaluateFitness(img, s);
+                evaluateFitness(s);
             }
         }
     }
 
-    private static void evaluateFitness(BufferedImage ideal, Solution s)
+    private static void evaluateFitness(Solution s)
     {
-        int w = ideal.getWidth();
-        int h = ideal.getHeight();
+//        log("evaluateFitness");
 
-        BufferedImage test = express(s, w, h);
-        s.setFitness(compare(ideal, test));
+        BufferedImage test = express(s);
+        s.setFitness(compare(test));
+        
+        if(s.getFitness() < bestFitness)
+        {
+            bestFitness = s.getFitness();
+        }
+        
+        if(s.getFitness() > worstFitness)
+        {
+            worstFitness = s.getFitness();
+            
+        }
     }
 
-    private static long compare(BufferedImage a, BufferedImage b)
+    private static long compare(BufferedImage b)
     {
-        long score = Long.MIN_VALUE;
-        int w = min(a.getWidth(), b.getWidth());
-        int h = min(a.getHeight(), b.getHeight());
+//        log("compare");
+        
+        int w = test.length;
+        int h = test[0].length;
+        
+        long score = 0L;
 
-        for (int x = 0; x < w; x++)
+        for (int x = 0; x < w; x += 2)
         {
-            for (int y = 0; y < h; y++)
+            for (int y = 0; y < h; y += 2)
             {
-                score += compare(argb(a.getRGB(x, y)), argb(b.getRGB(x, y)));
+                score += compare(x, y, argb(b.getRGB(x, y)));
             }
         }
 
         return score;
     }
 
-    private static int compare(int[] a, int[] b)
+    private static int compare(int x, int y, int[] b)
     {
-        return abs(a[0] - b[0]) + abs(a[1] - b[1]) + abs(a[2] - b[2]) + abs(a[3] - b[3]);
+//        log("compare");
+        
+        return abs(test[x][y][1] - b[1]) + 
+                abs(test[x][y][2] - b[2]) +
+                abs(test[x][y][3] - b[3]);
     }
 
     private static int[] argb(int p)
     {
+//        log("argb");
+        
         return new int[]
         {
             (p >> 24) & 0xFF,
@@ -214,8 +281,13 @@ public class painter
         };
     }
 
-    private static BufferedImage express(Solution s, int width, int height)
+    private static BufferedImage express(Solution s)
     {
+//        log("express");
+        
+        int width = test.length;
+        int height = test[0].length;
+        
         BufferedImage test = new BufferedImage(width, height, TYPE_INT_ARGB);
         Graphics2D g = test.createGraphics();
 
@@ -231,35 +303,48 @@ public class painter
 
     private static void save(int generation, String arg, Solution solution, int width, int height) throws IOException
     {
-        String name = format("%08d-%s.png", generation, arg);
+        log("save");
+        
+        String name = format("%06d-%s.png", generation, arg);
         File file = new File(SAVE, name);
         out.println(file.getAbsolutePath());
-        ImageIO.write(express(solution, width, height), "png", file);
+        ImageIO.write(express(solution), "png", file);
     }
 
     private static void recombine(Solution[] pop, int x1, int y1, int x2, int y2)
     {
-        Arrays.sort(pop);
-        int count = pop.length * 9 / 10; // ten percent of the population is elite
+        int count = 0;
+        int a = 0;
+        int b = 1;
+        int killed = 0;
         
-        for(int a = 0; a < pop.length; a++)
+        while(count < pop.length)
         {
-            for(int b = a + 1; b < pop.length; b++)
+            long meanFitness = round(worstFitness - bestFitness / 2.0);
+            
+            if(pop[count].getFitness() > worstFitness)
             {
-                if(count < pop.length)
-                {
-                    pop[count] = recombine(pop[a], pop[b], x1, y1, x2, y2);
-                    count += 1;
-                }
-                else
-                {
-                    return;
-                }
+                pop[count] = randomSolution(x1, y1, x2, y2);
+                killed += 1;
             }
+            else if(pop[count].getFitness() > bestFitness)
+            {
+                boolean mutate = pop[a].getFitness() > meanFitness || 
+                        pop[b].getFitness() > meanFitness;
+                
+                pop[count] = recombine(pop[a], pop[b], x1, y1, x2, y2, mutate);
+                killed += 1;
+            }
+            
+            count += 1;
+            a = (a + 1) % (pop.length / 4);
+            b = (b + 1) % (pop.length / 3);
         }
+        
+        log("recombined " + killed + " out of " + pop.length);
     }
     
-    private static Solution recombine(Solution a, Solution b, int x1, int y1, int x2, int y2)
+    private static Solution recombine(Solution a, Solution b, int x1, int y1, int x2, int y2, boolean mutate)
     {
         int length = min(a.SHAPES.length, b.SHAPES.length);
         int c = R.nextInt(length);
@@ -272,7 +357,7 @@ public class painter
         arraycopy(a.COLORS, 0, colors, 0, c);
         arraycopy(b.COLORS, c, colors, c, colors.length - c);
         
-        if(R.nextDouble() < MUTATION_RATE)
+        if(mutate)
         {
             mutate(shapes, colors, x1, y1, x2, y2);
         }
@@ -282,26 +367,30 @@ public class painter
 
     private static void mutate(Shape[] shapes, Color[] colors, int x1, int y1, int x2, int y2)
     {
-        int i = R.nextInt(shapes.length);
+//        log("mutate");
+        
+        int i = 2 + R.nextInt(shapes.length - 2);
         shapes[i] = mutate(shapes[i], x1, y1, x2, y2);
         
-        int j = R.nextInt(colors.length);
+        int j = 2 + R.nextInt(colors.length - 2);
         colors[j] = mutate(colors[j]);
     }
 
     private static Color mutate(Color color)
     {
-        int r = min(255, max(0, (color.getRed() + R.nextInt(64) - 32)));
-        int g = min(255, max(0, (color.getGreen() + R.nextInt(64) - 32)));
-        int b = min(255, max(0, (color.getBlue() + R.nextInt(64) - 32)));
-//        int a = min(255, max(0, (color.getAlpha() + R.nextInt(64) - 32)));
+//        log("mutate");
         
-//        return new Color(r, g, b, a);
+        int r = min(255, max(0, (color.getRed() + R.nextInt(33) - 16)));
+        int g = min(255, max(0, (color.getGreen() + R.nextInt(33) - 16)));
+        int b = min(255, max(0, (color.getBlue() + R.nextInt(33) - 16)));
+        
         return new Color(r, g, b, 128);
     }
 
     private static Shape mutate(Shape shape, int x1, int y1, int x2, int y2)
     {
+        log("mutate");
+        
         PathIterator path = shape.getPathIterator(null);
         float[] p = new float[6];
         int t = 0;
@@ -322,5 +411,10 @@ public class painter
         }
         
         return new Polygon(xs, ys, VERTEX_COUNT);
+    }
+    
+    private static void log(Object o)
+    {
+        out.println(o);
     }
 }
