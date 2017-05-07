@@ -1,11 +1,9 @@
 package gen2;
 
 import java.awt.Color;
-import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
-import static java.lang.Math.sin;
 import java.util.Random;
 
 public class PolygonFactory

@@ -41,6 +41,10 @@ public class Individual
     @Override
     public String toString()
     {
-        return "Individual{age=" + age + ", fitness=" + fitness + "}";
+        return "Individual@" +
+                hashCode() +
+                "{age=" + age +
+                ", fitness=" + fitness +
+                "}";
     }
 }

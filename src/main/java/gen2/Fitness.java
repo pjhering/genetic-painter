@@ -13,14 +13,14 @@ public class Fitness
     private final int HEIGHT;
     private final BufferedImage TARGET;
     private final int[][][] ARGB;
-    private final BufferedImage CANVAS;
+    private final Expresser EXPRESSER;
 
     public Fitness(BufferedImage target)
     {
         this.TARGET = requireNonNull(target);
         this.WIDTH = TARGET.getWidth();
         this.HEIGHT = TARGET.getHeight();
-        this.CANVAS = new BufferedImage(WIDTH, HEIGHT, TYPE_INT_ARGB);
+        this.EXPRESSER = new Expresser(new BufferedImage(WIDTH, HEIGHT, TYPE_INT_ARGB));
         this.ARGB = new int[WIDTH][HEIGHT][];
 
         for (int x = 0; x < WIDTH; x++)
@@ -43,15 +43,10 @@ public class Fitness
         };
     }
 
-    public long evaluate(Polygon[] polygons)
+    public long evaluate(Individual individual)
     {
-        Graphics g = CANVAS.getGraphics();
-        g.clearRect(0, 0, WIDTH, HEIGHT);
-        
-        for(Polygon p : polygons)
-        {
-            p.draw(g);
-        }
+        EXPRESSER.express(individual);
+        BufferedImage canvas = EXPRESSER.getCanvas();
         
         long score = 0L;
         
@@ -59,7 +54,7 @@ public class Fitness
         {
             for(int y = 0; y < HEIGHT; y += 2)
             {
-                int value = CANVAS.getRGB(x, y);
+                int value = canvas.getRGB(x, y);
                 int[] argb = argb(value);
                 score += abs(ARGB[x][y][1] - argb[1]);
                 score += abs(ARGB[x][y][2] - argb[2]);
@@ -67,6 +62,6 @@ public class Fitness
             }
         }
         
-        return 0l;
+        return score;
     }
 }

@@ -1,6 +1,5 @@
 package gen2;
 
-import gen2.Individual;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
