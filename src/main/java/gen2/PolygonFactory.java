@@ -1,9 +1,12 @@
 package gen2;
 
 import java.awt.Color;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
+import static java.lang.Math.sin;
 import java.util.Random;
 
 public class PolygonFactory
@@ -48,7 +51,7 @@ public class PolygonFactory
                 .append("0 ").append(HEIGHT)
                 .append("\" fill=\"rgb(255,255,255)\" ")
                 .append("opacity=\"0.9999999999999999\"/>\n");
-                
+
         for(Polygon p : ps)
         {
             builder.append(getSVG(p));
@@ -67,10 +70,10 @@ public class PolygonFactory
         int g = p.getGreen();
         int b = p.getBlue();
         double a = p.getAlpha() / 255.0;
-        
+
         StringBuilder builder = new StringBuilder()
                 .append("<polygon points=\"");
-        
+
         for(int i = 0; i < xs.length; i++)
         {
             builder.append(xs[i])
@@ -78,7 +81,7 @@ public class PolygonFactory
                     .append(ys[i])
                     .append(" ");
         }
-        
+
         builder.append("\" fill=\"rgb(")
                 .append(r).append(",")
                 .append(g).append(",")
@@ -86,14 +89,14 @@ public class PolygonFactory
                 .append("opacity=\"")
                 .append(a)
                 .append("\"/>\n");
-        
+
         return builder.toString();
     }
 
     public Polygon getRotated(Polygon p, double theta)
     {
         throw new UnsupportedOperationException("NOT IMPLEMENTED");
-        
+
 //        int[] xs = p.getXs();
 //        int[] ys = p.getYs();
 //        int size = p.getSize();
@@ -199,40 +202,86 @@ public class PolygonFactory
         return new Polygon(xs, ys, p.getColor());
     }
 
-    public Polygon[] getRandom(int size, int count)
+    public Polygon[] getRandom(int vertices, int length)
     {
-        Polygon[] array = new Polygon[count];
+        Polygon[] array = new Polygon[length];
 
-        for(int i = 0; i < count; i++)
+        for(int i = 0; i < length; i++)
         {
-            array[i] = getRandom(size);
+            array[i] = getRandom(vertices);
         }
 
         return array;
     }
 
-    public Polygon getRandom(int size)
+    public Polygon getRandom(int vertices)
     {
-        if(size < 3)
+        if(vertices < 3)
         {
-            throw new IllegalArgumentException("size < 3");
+            throw new IllegalArgumentException("vertices < 3");
         }
 
-        int[] xs = new int[size];
-        int[] ys = new int[size];
+        int[] xs = new int[vertices];
+        int[] ys = new int[vertices];
 
-        for(int i = 0; i < size; i++)
+        for(int i = 0; i < vertices; i++)
         {
             xs[i] = MINX + R.nextInt(WIDTH);
             ys[i] = MINY + R.nextInt(HEIGHT);
         }
 
-        Color color = new Color(
+        Color color = getRandomColor();
+
+        return new Polygon(xs, ys, color);
+    }
+
+    public Color getRandomColor()
+    {
+        return new Color(
                 R.nextInt(256),
                 R.nextInt(256),
                 R.nextInt(256),
                 128);
+    }
 
+    public Polygon[] getRandomRegular(int vertices, int radius, int length)
+    {
+        Polygon[] array = new Polygon[length];
+
+        for(int i = 0; i < length; i++)
+        {
+            array[i] = getRandomRegular(vertices, radius);
+        }
+
+        return array;
+    }
+
+    public Polygon getRandomRegular(int vertices, int radius)
+    {
+        if(vertices < 3)
+        {
+            throw new IllegalArgumentException("vertices < 3");
+        }
+
+        double cx = MINX + (R.nextDouble() * WIDTH);
+        double cy = MINY + (R.nextDouble() * HEIGHT);
+
+        int[] xs = new int[vertices];
+        int[] ys = new int[vertices];
+
+        double start = R.nextDouble() * PI;
+        for(int i = 0; i < vertices; i++)
+        {
+            double radians = start + i * (2 * PI / vertices);
+            double x = cx + radius * sin(radians);
+            double y = cy + radius * cos(radians);
+            
+            xs[i] = (int) round(x);
+            ys[i] = (int) round(y);
+        }
+
+        Color color = getRandomColor();
+        
         return new Polygon(xs, ys, color);
     }
 }
