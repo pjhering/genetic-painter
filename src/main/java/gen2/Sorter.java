@@ -1,5 +1,6 @@
 package gen2;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -36,5 +37,10 @@ public class Sorter implements Comparator<Individual>
     void sort(List<Individual> list)
     {
         Collections.sort(list, this);
+    }
+    
+    void sort(Individual[] array)
+    {
+        Arrays.sort(array, this);
     }
 }

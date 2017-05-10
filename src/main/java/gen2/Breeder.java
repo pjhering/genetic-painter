@@ -21,7 +21,6 @@ public class Breeder
     {
         Individual[] next = new Individual[current.length];
         next[0] = current[0];
-        next[0].setAge(next[0].getAge() + 1);
 
         int i = 1;
         double limit = (int) (next.length / 4.0);
