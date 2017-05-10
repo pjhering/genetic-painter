@@ -6,11 +6,12 @@ import static java.util.Objects.requireNonNull;
 
 public class Solution
 {
+
     public final Shape[] SHAPES;
     public final Color[] COLORS;
     private long fitness;
     private boolean hasBeenEvaluated;
-    
+
     public Solution(Shape[] shapes, Color[] colors)
     {
         this.SHAPES = requireNonNull(shapes);

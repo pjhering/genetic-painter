@@ -9,33 +9,34 @@ import javax.imageio.ImageIO;
 
 public class evolve
 {
+
     private static File save;
-    
+
     public static void main(String[] args)
     {
-        if(args.length != 1)
+        if (args.length != 1)
         {
             log("expected one argument: the name of an image file");
             return;
         }
-        
+
         URL url = evolve.class.getResource(args[0]);
-        
-        if(url == null)
+
+        if (url == null)
         {
             log("unable to find " + args[0]);
         }
-        
+
         try
         {
             BufferedImage img = ImageIO.read(url);
         }
-        catch(IOException ex)
+        catch (IOException ex)
         {
             ex.printStackTrace();
         }
     }
-    
+
     private static void log(Object o)
     {
         out.println(o);

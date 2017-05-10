@@ -4,15 +4,16 @@ import static java.util.Objects.requireNonNull;
 
 public class Individual
 {
+
     private final Polygon[] polygons;
     private int age;
     private long fitness;
-    
-    public Individual (Polygon[] polygons)
+
+    public Individual(Polygon[] polygons)
     {
         this.polygons = requireNonNull(polygons);
     }
-    
+
     public Polygon[] getPolygons()
     {
         return polygons;
@@ -37,14 +38,14 @@ public class Individual
     {
         this.fitness = fitness;
     }
-    
+
     @Override
     public String toString()
     {
-        return "Individual@" +
-                hashCode() +
-                "{age=" + age +
-                ", fitness=" + fitness +
-                "}";
+        return "Individual@"
+                + hashCode()
+                + "{age=" + age
+                + ", fitness=" + fitness
+                + "}";
     }
 }

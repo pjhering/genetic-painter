@@ -15,19 +15,19 @@ public class ViewerTest
         Viewer viewer = new Viewer(640, 480);
         viewer.open(polygons);
 
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             try
             {
                 Thread.sleep(1000);
             }
-            catch(InterruptedException ex)
+            catch (InterruptedException ex)
             {
                 ex.printStackTrace();
                 exit(0);
             }
 
-            for(int p = 0; p < polygons.length; p++)
+            for (int p = 0; p < polygons.length; p++)
             {
                 polygons[p] = factory.getRecolored(polygons[p], 128, 128, 128);
             }

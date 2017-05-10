@@ -20,7 +20,7 @@ public class Viewer implements WindowListener
         WIDTH = width;
         HEIGHT = height;
         Dimension size = new Dimension(WIDTH, HEIGHT);
-        
+
         CANVAS = new PolygonPanel();
         CANVAS.setSize(size);
         CANVAS.setPreferredSize(size);
@@ -37,7 +37,7 @@ public class Viewer implements WindowListener
 
     public void open()
     {
-        if(!open)
+        if (!open)
         {
             open(new Polygon[0]);
         }
@@ -45,14 +45,14 @@ public class Viewer implements WindowListener
 
     public void open(Polygon[] polygons)
     {
-        if(!open)
+        if (!open)
         {
             CANVAS.setPolygons(polygons);
             FRAME.setLocationRelativeTo(null);
             FRAME.setVisible(true);
         }
     }
-    
+
     public void close()
     {
         FRAME.setVisible(false);

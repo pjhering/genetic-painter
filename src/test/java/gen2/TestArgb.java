@@ -5,6 +5,7 @@ import static java.lang.System.out;
 
 public class TestArgb
 {
+
     public static void main(String[] args)
     {
         Color color = new Color(32, 64, 128, 255);
@@ -16,11 +17,14 @@ public class TestArgb
             (value >> 8) & 0xFF,
             value & 0xFF
         };
-        
+
         out.println(color);
         out.println(value);
         out.println(argb);
-        for(int i : argb) out.print(" " + i);
+        for (int i : argb)
+        {
+            out.print(" " + i);
+        }
         out.println();
     }
 }

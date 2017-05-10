@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 public class TestFitness
 {
+
     public static void main(String[] args) throws IOException
     {
         URL url = TestFitness.class.getResource("/test.png");
@@ -20,8 +21,8 @@ public class TestFitness
         PolygonFactory factory = new PolygonFactory(0, 0, width, height);
         List<Individual> population = new ArrayList<>();
         Fitness fitness = new Fitness(original);
-        
-        for(int i = 0; i < 100; i++)
+
+        for (int i = 0; i < 100; i++)
         {
             Individual individual = new Individual(factory.getRandom(3, 250));
             population.add(individual);
@@ -29,12 +30,12 @@ public class TestFitness
             individual.setFitness(score);
             individual.setAge(1);
         }
-        
+
         Sorter sorter = new Sorter();
         Collections.sort(population, sorter);
-        
+
         population.forEach(i -> out.println(i));
-        
+
         Viewer viewer = new Viewer(width, height);
         viewer.open(population.get(0).getPolygons());
     }

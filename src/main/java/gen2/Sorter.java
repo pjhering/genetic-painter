@@ -10,26 +10,26 @@ public class Sorter implements Comparator<Individual>
     @Override
     public int compare(Individual o1, Individual o2)
     {
-        if(o1.getFitness() < o2.getFitness())
+        if (o1.getFitness() < o2.getFitness())
         {
             return -1;
         }
-        
-        if(o1.getFitness() > o2.getFitness())
+
+        if (o1.getFitness() > o2.getFitness())
         {
             return 1;
         }
-        
-        if(o1.getAge() < o2.getAge())
+
+        if (o1.getAge() < o2.getAge())
         {
             return 1;
         }
-        
-        if(o1.getAge() > o2.getAge())
+
+        if (o1.getAge() > o2.getAge())
         {
             return -1;
         }
-        
+
         return 0;
     }
 

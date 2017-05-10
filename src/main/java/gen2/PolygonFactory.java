@@ -52,7 +52,7 @@ public class PolygonFactory
                 .append("\" fill=\"rgb(255,255,255)\" ")
                 .append("opacity=\"0.9999999999999999\"/>\n");
 
-        for(Polygon p : ps)
+        for (Polygon p : ps)
         {
             builder.append(getSVG(p));
         }
@@ -74,7 +74,7 @@ public class PolygonFactory
         StringBuilder builder = new StringBuilder()
                 .append("<polygon points=\"");
 
-        for(int i = 0; i < xs.length; i++)
+        for (int i = 0; i < xs.length; i++)
         {
             builder.append(xs[i])
                     .append(" ")
@@ -130,9 +130,9 @@ public class PolygonFactory
     {
         int min = a[0];
 
-        for(int i = 1; i < a.length; i++)
+        for (int i = 1; i < a.length; i++)
         {
-            if(a[i] < min)
+            if (a[i] < min)
             {
                 min = a[i];
             }
@@ -145,9 +145,9 @@ public class PolygonFactory
     {
         int max = a[0];
 
-        for(int i = 1; i < a.length; i++)
+        for (int i = 1; i < a.length; i++)
         {
-            if(a[i] > max)
+            if (a[i] > max)
             {
                 max = a[i];
             }
@@ -178,7 +178,7 @@ public class PolygonFactory
         int[] xs = new int[size];
         int[] ys = new int[size];
 
-        for(int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
         {
             xs[i] = min(MAXX, max(MINX, p.getX(i) + dx));
             ys[i] = min(MAXY, max(MINY, p.getY(i) + dy));
@@ -193,7 +193,7 @@ public class PolygonFactory
         int[] xs = new int[size];
         int[] ys = new int[size];
 
-        for(int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
         {
             xs[i] = min(MAXX, max(MINX, (int) round(p.getX(i) * f)));
             ys[i] = min(MAXY, max(MINY, (int) round(p.getY(i) * f)));
@@ -206,7 +206,7 @@ public class PolygonFactory
     {
         Polygon[] array = new Polygon[length];
 
-        for(int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             array[i] = getRandom(vertices);
         }
@@ -216,7 +216,7 @@ public class PolygonFactory
 
     public Polygon getRandom(int vertices)
     {
-        if(vertices < 3)
+        if (vertices < 3)
         {
             throw new IllegalArgumentException("vertices < 3");
         }
@@ -224,7 +224,7 @@ public class PolygonFactory
         int[] xs = new int[vertices];
         int[] ys = new int[vertices];
 
-        for(int i = 0; i < vertices; i++)
+        for (int i = 0; i < vertices; i++)
         {
             xs[i] = MINX + R.nextInt(WIDTH);
             ys[i] = MINY + R.nextInt(HEIGHT);
@@ -248,7 +248,7 @@ public class PolygonFactory
     {
         Polygon[] array = new Polygon[length];
 
-        for(int i = 0; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
             array[i] = getRandomRegular(vertices, radius);
         }
@@ -258,7 +258,7 @@ public class PolygonFactory
 
     public Polygon getRandomRegular(int vertices, int radius)
     {
-        if(vertices < 3)
+        if (vertices < 3)
         {
             throw new IllegalArgumentException("vertices < 3");
         }
@@ -270,18 +270,18 @@ public class PolygonFactory
         int[] ys = new int[vertices];
 
         double start = R.nextDouble() * PI;
-        for(int i = 0; i < vertices; i++)
+        for (int i = 0; i < vertices; i++)
         {
             double radians = start + i * (2 * PI / vertices);
             double x = cx + radius * sin(radians);
             double y = cy + radius * cos(radians);
-            
+
             xs[i] = (int) round(x);
             ys[i] = (int) round(y);
         }
 
         Color color = getRandomColor();
-        
+
         return new Polygon(xs, ys, color);
     }
 }

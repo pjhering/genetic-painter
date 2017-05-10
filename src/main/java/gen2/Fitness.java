@@ -1,6 +1,5 @@
 package gen2;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.lang.Math.abs;
@@ -25,7 +24,7 @@ public class Fitness
 
         for (int x = 0; x < WIDTH; x++)
         {
-            for(int y = 0; y < HEIGHT; y++)
+            for (int y = 0; y < HEIGHT; y++)
             {
                 ARGB[x][y] = argb(TARGET.getRGB(x, y));
             }
@@ -47,12 +46,12 @@ public class Fitness
     {
         EXPRESSER.express(individual);
         BufferedImage canvas = EXPRESSER.getCanvas();
-        
+
         long score = 0L;
-        
-        for(int x = 0; x < WIDTH; x += 2)
+
+        for (int x = 0; x < WIDTH; x += 2)
         {
-            for(int y = 0; y < HEIGHT; y += 2)
+            for (int y = 0; y < HEIGHT; y += 2)
             {
                 int value = canvas.getRGB(x, y);
                 int[] argb = argb(value);
@@ -61,7 +60,7 @@ public class Fitness
                 score += abs(ARGB[x][y][3] - argb[3]);
             }
         }
-        
+
         return score;
     }
 }

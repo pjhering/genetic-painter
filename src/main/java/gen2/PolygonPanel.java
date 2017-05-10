@@ -8,23 +8,23 @@ public class PolygonPanel extends JComponent
 {
 
     private Polygon[] polygons;
-    
+
     public PolygonPanel(Polygon[] polygons)
     {
         this.polygons = requireNonNull(polygons);
     }
-    
+
     public PolygonPanel()
     {
         this(new Polygon[0]);
     }
-    
+
     @Override
     public void paintComponent(Graphics g)
     {
         g.clearRect(0, 0, getWidth(), getHeight());
-        
-        for(Polygon p : polygons)
+
+        for (Polygon p : polygons)
         {
             p.draw(g);
         }
