@@ -44,7 +44,8 @@ public class evolve implements Observer
         try
         {
             BufferedImage img = ImageIO.read(url);
-            new evolve(img).start();
+            evolve e = new evolve(img);
+            e.start();
         }
         catch (IOException ex)
         {
@@ -70,6 +71,7 @@ public class evolve implements Observer
         viewer.open();
         
         Evolver ev = new Evolver(3, new Fitness(image), new Breeder(), new Mutator());
+        ev.addObserver(this);
         ev.evolve(pop);
     }
 
